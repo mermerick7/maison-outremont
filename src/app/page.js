@@ -1,16 +1,14 @@
 export default function Home() {
   return (
-    <main className="min-h-screen flex flex-col items-center justify-center px-6">
-      <div className="text-center max-w-2xl">
+    <main className="px-6 py-32 md:py-48">
+      <div className="text-center max-w-2xl mx-auto">
         {/* Logo typographique Maison Outremont */}
         <div className="mb-12">
           <div className="text-xs tracking-[0.4em] text-stone mb-4 uppercase">
             Depuis 2010
           </div>
           <h1 className="font-serif text-6xl md:text-7xl text-navy leading-tight tracking-tight">
-            Maison
-            <br />
-            Outremont
+            Maison Outremont
           </h1>
           <div className="text-sm tracking-[0.3em] text-stone mt-6 uppercase">
             Paris · Montréal
@@ -32,11 +30,6 @@ export default function Home() {
           Tailoring contemporain et savoir-faire français.
           Une maison de prêt-à-porter masculin entre tradition et modernité.
         </p>
-
-        {/* Mention bas de page */}
-        <div className="mt-16 text-xs tracking-[0.3em] text-stone uppercase">
-          Site en développement
-        </div>
       </div>
     </main>
   );
