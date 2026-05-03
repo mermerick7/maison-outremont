@@ -1,6 +1,10 @@
+"use client";
+
 import Link from "next/link";
+import { useCart } from "../contexts/CartContext";
 
 export default function Header() {
+  const { cartCount, isHydrated } = useCart();
   return (
     <header className="border-b border-stone/30 bg-cream sticky top-0 z-50 backdrop-blur-sm bg-cream/95">
       <div className="max-w-7xl mx-auto px-6 py-5">
@@ -118,6 +122,11 @@ export default function Header() {
                 <path d="M3 6h18" />
                 <path d="M16 10a4 4 0 0 1-8 0" />
               </svg>
+               {isHydrated && cartCount > 0 && (
+    <span className="absolute -top-2 -right-2 bg-navy text-cream text-[10px] font-medium min-w-[18px] h-[18px] px-1 rounded-full flex items-center justify-center">
+      {cartCount}
+    </span>
+  )}
             </Link>
           </div>
         </div>

@@ -5,10 +5,12 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { products } from "../../data/products";
 import ProductCard from "../../components/ProductCard";
+import { useCart } from "../../contexts/CartContext";
 
 export default function ProductPage({ params }) {
   const { sku } = use(params);
   const router = useRouter();
+  const { addToCart } = useCart();
 
   // Trouver le produit
   const product = products.find((p) => p.sku === sku);
@@ -48,14 +50,14 @@ export default function ProductPage({ params }) {
 
   // Action ajout au panier (placeholder pour l'instant)
   const handleAddToCart = () => {
-    if (!selectedSize) {
-      setShowSizeError(true);
-      return;
-    }
-    // TODO: à câbler avec le vrai panier + tracking GTM add_to_cart
-    setAddedToCart(true);
-    setTimeout(() => setAddedToCart(false), 2500);
-  };
+  if (!selectedSize) {
+    setShowSizeError(true);
+    return;
+  }
+  addToCart(product.sku, selectedSize, quantity);
+  setAddedToCart(true);
+  setTimeout(() => setAddedToCart(false), 2500);
+};
 
   return (
     <main className="max-w-7xl mx-auto px-6 py-12 md:py-16">
