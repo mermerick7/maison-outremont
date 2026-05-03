@@ -2,9 +2,12 @@
 
 import Link from "next/link";
 import { useCart } from "../contexts/CartContext";
+import { useWishlist } from "../contexts/WishlistContext";
 
 export default function Header() {
   const { cartCount, isHydrated } = useCart();
+  const { wishlistCount, isHydrated: wishlistHydrated } = useWishlist();
+
   return (
     <header className="border-b border-stone/30 bg-cream sticky top-0 z-50 backdrop-blur-sm bg-cream/95">
       <div className="max-w-7xl mx-auto px-6 py-5">
@@ -89,7 +92,7 @@ export default function Header() {
             <Link
               href="/wishlist"
               aria-label="Liste de souhaits"
-              className="hover:text-navy transition-colors"
+              className="hover:text-navy transition-colors relative"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -102,6 +105,11 @@ export default function Header() {
               >
                 <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.29 1.51 4.04 3 5.5l7 7Z" />
               </svg>
+              {wishlistHydrated && wishlistCount > 0 && (
+                <span className="absolute -top-2 -right-2 bg-tobacco text-cream text-[10px] font-medium min-w-[18px] h-[18px] px-1 rounded-full flex items-center justify-center">
+                  {wishlistCount}
+                </span>
+              )}
             </Link>
 
             <Link
@@ -122,11 +130,11 @@ export default function Header() {
                 <path d="M3 6h18" />
                 <path d="M16 10a4 4 0 0 1-8 0" />
               </svg>
-               {isHydrated && cartCount > 0 && (
-    <span className="absolute -top-2 -right-2 bg-navy text-cream text-[10px] font-medium min-w-[18px] h-[18px] px-1 rounded-full flex items-center justify-center">
-      {cartCount}
-    </span>
-  )}
+              {isHydrated && cartCount > 0 && (
+                <span className="absolute -top-2 -right-2 bg-navy text-cream text-[10px] font-medium min-w-[18px] h-[18px] px-1 rounded-full flex items-center justify-center">
+                  {cartCount}
+                </span>
+              )}
             </Link>
           </div>
         </div>

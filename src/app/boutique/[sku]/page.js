@@ -6,22 +6,21 @@ import Link from "next/link";
 import { products } from "../../data/products";
 import ProductCard from "../../components/ProductCard";
 import { useCart } from "../../contexts/CartContext";
+import { useWishlist } from "../../contexts/WishlistContext";
 
 export default function ProductPage({ params }) {
   const { sku } = use(params);
   const router = useRouter();
   const { addToCart } = useCart();
+  const { isInWishlist, toggleWishlist, isHydrated: wishlistHydrated } = useWishlist();
 
-  // Trouver le produit
   const product = products.find((p) => p.sku === sku);
 
-  // Hooks DOIVENT être appelés avant tout return conditionnel
   const [selectedSize, setSelectedSize] = useState(null);
   const [quantity, setQuantity] = useState(1);
   const [showSizeError, setShowSizeError] = useState(false);
   const [addedToCart, setAddedToCart] = useState(false);
 
-  // Si le produit n'existe pas, page 404 simple
   if (!product) {
     return (
       <main className="px-6 py-32 max-w-2xl mx-auto text-center">
@@ -41,27 +40,24 @@ export default function ProductPage({ params }) {
     );
   }
 
-  // Produits suggérés (même catégorie, hors produit courant) — max 3
   const suggestedProducts = products
     .filter(
       (p) => p.category_l1 === product.category_l1 && p.sku !== product.sku
     )
     .slice(0, 3);
 
-  // Action ajout au panier (placeholder pour l'instant)
   const handleAddToCart = () => {
-  if (!selectedSize) {
-    setShowSizeError(true);
-    return;
-  }
-  addToCart(product.sku, selectedSize, quantity);
-  setAddedToCart(true);
-  setTimeout(() => setAddedToCart(false), 2500);
-};
+    if (!selectedSize) {
+      setShowSizeError(true);
+      return;
+    }
+    addToCart(product.sku, selectedSize, quantity);
+    setAddedToCart(true);
+    setTimeout(() => setAddedToCart(false), 2500);
+  };
 
   return (
     <main className="max-w-7xl mx-auto px-6 py-12 md:py-16">
-      {/* Fil d'Ariane */}
       <nav className="text-xs tracking-[0.2em] uppercase text-charcoal/50 mb-8 flex items-center gap-2 flex-wrap">
         <Link href="/" className="hover:text-navy transition-colors">
           Accueil
@@ -74,9 +70,7 @@ export default function ProductPage({ params }) {
         <span className="text-navy">{product.category_l1_label}</span>
       </nav>
 
-      {/* Layout principal : visuel à gauche, infos à droite */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-16 mb-24">
-        {/* COLONNE GAUCHE — Visuel produit */}
         <div className="md:sticky md:top-32 md:self-start">
           <div
             className="aspect-[4/5] w-full flex items-end p-8 relative overflow-hidden"
@@ -98,37 +92,29 @@ export default function ProductPage({ params }) {
           </div>
         </div>
 
-        {/* COLONNE DROITE — Informations produit */}
         <div className="flex flex-col">
-          {/* Catégorie */}
           <p className="text-xs tracking-[0.3em] uppercase text-stone mb-3">
             {product.category_l2_label} · {product.season_collection}
           </p>
 
-          {/* Nom */}
           <h1 className="font-serif text-4xl md:text-5xl text-navy mb-4 leading-tight">
             {product.name}
           </h1>
 
-          {/* Couleur et matière */}
           <p className="text-sm text-charcoal/70 mb-6">
             {product.color} · {product.material_primary}
           </p>
 
-          {/* Prix */}
           <p className="text-2xl text-charcoal mb-8 font-light">
             {product.price_eur.toLocaleString("fr-FR")} €
           </p>
 
-          {/* Séparateur */}
           <div className="w-12 h-px bg-tobacco mb-8"></div>
 
-          {/* Description */}
           <p className="text-base text-charcoal/80 leading-relaxed mb-10">
             {product.description}
           </p>
 
-          {/* Sélecteur de taille */}
           <div className="mb-8">
             <div className="flex justify-between items-baseline mb-4">
               <span className="text-xs tracking-[0.2em] uppercase text-navy">
@@ -163,7 +149,6 @@ export default function ProductPage({ params }) {
             )}
           </div>
 
-          {/* Sélecteur de quantité */}
           <div className="mb-8">
             <span className="text-xs tracking-[0.2em] uppercase text-navy block mb-4">
               Quantité
@@ -187,7 +172,6 @@ export default function ProductPage({ params }) {
             </div>
           </div>
 
-          {/* Boutons action */}
           <div className="space-y-3 mb-10">
             <button
               onClick={handleAddToCart}
@@ -199,12 +183,20 @@ export default function ProductPage({ params }) {
             >
               {addedToCart ? "Ajouté au panier ✓" : "Ajouter au panier"}
             </button>
-            <button className="w-full py-4 text-xs tracking-[0.3em] uppercase border border-navy text-navy hover:bg-navy hover:text-cream transition-colors">
-              Ajouter à la liste de souhaits
+            <button
+              onClick={() => toggleWishlist(product.sku)}
+              className={`w-full py-4 text-xs tracking-[0.3em] uppercase border transition-colors ${
+                wishlistHydrated && isInWishlist(product.sku)
+                  ? "border-tobacco bg-tobacco text-cream hover:bg-tobacco/90"
+                  : "border-navy text-navy hover:bg-navy hover:text-cream"
+              }`}
+            >
+              {wishlistHydrated && isInWishlist(product.sku)
+                ? "Retirer de la liste de souhaits"
+                : "Ajouter à la liste de souhaits"}
             </button>
           </div>
 
-          {/* Détails complémentaires */}
           <div className="border-t border-stone/30 pt-8 space-y-4 text-sm">
             <div className="flex justify-between">
               <span className="text-charcoal/60">Coupe</span>
@@ -220,7 +212,6 @@ export default function ProductPage({ params }) {
             </div>
           </div>
 
-          {/* Mentions livraison */}
           <div className="mt-8 pt-6 border-t border-stone/30 text-xs text-charcoal/60 space-y-2">
             <p>Livraison offerte dès 200 € en France métropolitaine</p>
             <p>Retours gratuits sous 30 jours</p>
@@ -229,7 +220,6 @@ export default function ProductPage({ params }) {
         </div>
       </div>
 
-      {/* Section produits suggérés */}
       {suggestedProducts.length > 0 && (
         <section className="border-t border-stone/30 pt-16">
           <div className="text-center mb-12">
@@ -251,7 +241,6 @@ export default function ProductPage({ params }) {
   );
 }
 
-// Helper réutilisé du ProductCard
 function isLightColor(hex) {
   const r = parseInt(hex.slice(1, 3), 16);
   const g = parseInt(hex.slice(3, 5), 16);

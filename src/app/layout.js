@@ -2,6 +2,7 @@ import { CartProvider } from "./contexts/CartContext";
 import { CheckoutProvider } from "./contexts/CheckoutContext";
 import { Cormorant_Garamond, Inter } from "next/font/google";
 import "./globals.css";
+import { WishlistProvider } from "./contexts/WishlistContext";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 
@@ -33,11 +34,13 @@ export default function RootLayout({ children }) {
       >
         <CartProvider>
   <CheckoutProvider>
-    <Header />
-    <div className="flex-grow">{children}</div>
-    <Footer />
+    <WishlistProvider>
+      <Header />
+      <div className="flex-grow">{children}</div>
+      <Footer />
+    </WishlistProvider>
   </CheckoutProvider>
-</CartProvider>   
+</CartProvider>  
       </body>
     </html>
   );
