@@ -1,4 +1,5 @@
 import { CartProvider } from "./contexts/CartContext";
+import { CheckoutProvider } from "./contexts/CheckoutContext";
 import { Cormorant_Garamond, Inter } from "next/font/google";
 import "./globals.css";
 import Header from "./components/Header";
@@ -30,11 +31,13 @@ export default function RootLayout({ children }) {
       <body
         className={`${cormorant.variable} ${inter.variable} antialiased font-sans flex flex-col min-h-screen`}
       >
-        <CartProvider> 
-        <Header />
-        <div className="flex-grow">{children}</div>
-        <Footer />
-        </CartProvider>   
+        <CartProvider>
+  <CheckoutProvider>
+    <Header />
+    <div className="flex-grow">{children}</div>
+    <Footer />
+  </CheckoutProvider>
+</CartProvider>   
       </body>
     </html>
   );

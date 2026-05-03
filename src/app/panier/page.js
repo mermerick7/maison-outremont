@@ -290,7 +290,7 @@ export default function CartPage() {
             </div>
 
             <Link
-              href="/checkout"
+              href="/checkout/livraison"
               className="block w-full py-4 text-xs tracking-[0.3em] uppercase bg-navy text-cream text-center hover:bg-navy-dark transition-colors mb-3"
             >
               Passer commande
