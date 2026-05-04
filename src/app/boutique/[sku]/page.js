@@ -1,12 +1,13 @@
 "use client";
 
-import { useState, use } from "react";
+import { useState, use, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { products } from "../../data/products";
 import ProductCard from "../../components/ProductCard";
 import { useCart } from "../../contexts/CartContext";
 import { useWishlist } from "../../contexts/WishlistContext";
+import { trackViewItem, trackAddToCart } from "../../lib/analytics";
 
 export default function ProductPage({ params }) {
   const { sku } = use(params);
@@ -20,6 +21,14 @@ export default function ProductPage({ params }) {
   const [quantity, setQuantity] = useState(1);
   const [showSizeError, setShowSizeError] = useState(false);
   const [addedToCart, setAddedToCart] = useState(false);
+  
+// Tracking GA4 : déclenche view_item quand un produit valide est affiché.
+  // Dépendance product?.sku (et non product) pour éviter des re-runs sur chaque render.
+  useEffect(() => {
+    if (product) {
+      trackViewItem(product);
+    }
+  }, [product?.sku]);
 
   if (!product) {
     return (
@@ -47,14 +56,15 @@ export default function ProductPage({ params }) {
     .slice(0, 3);
 
   const handleAddToCart = () => {
-    if (!selectedSize) {
-      setShowSizeError(true);
-      return;
-    }
-    addToCart(product.sku, selectedSize, quantity);
-    setAddedToCart(true);
-    setTimeout(() => setAddedToCart(false), 2500);
-  };
+  if (!selectedSize) {
+    setShowSizeError(true);
+    return;
+  }
+  addToCart(product.sku, selectedSize, quantity);
+  trackAddToCart(product, { size: selectedSize, quantity });
+  setAddedToCart(true);
+  setTimeout(() => setAddedToCart(false), 2500);
+};
 
   return (
     <main className="max-w-7xl mx-auto px-6 py-12 md:py-16">
